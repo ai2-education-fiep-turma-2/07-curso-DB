@@ -1,4 +1,10 @@
 import MySQLdb
+import names
+from random import seed
+from random import random
+from random import randrange
+
+#pip install names
 
 db = MySQLdb.connect(host="127.0.0.1",    
                      user="admin",         
@@ -7,11 +13,25 @@ db = MySQLdb.connect(host="127.0.0.1",
 
 cur = db.cursor()
 
-def insere_aleatorios():
-    cur.execute("INSERT INTO Person VALUES('06','uma pessoa','com seu sobrenome');")
-    cur.execute("INSERT INTO Site VALUES('DR-4', '-49.30', '-30.50');")
-    cur.execute("INSERT INTO Visited VALUES(621, 'DR-3', '1930-01-01');")
-    cur.execute("INSERT INTO Survey VALUES(619, 1, 'rad', '9.83')")
+def insere_aleatorios(): 
+      
+    nome = names.get_first_name()
+    sobrenome = names.get_last_name()
+    cur.execute("INSERT INTO Person (personal, family) VALUES('"+nome+"','"+sobrenome+"');")
+    
+    seed(20) 
+    cur.execute("INSERT INTO Site VALUES('DR-"+str(int(randrange(0,30)))+"', '"+ str(random()) +"', '"+ str(random()) +"');")
+    
+    sites = ["DR-1", "DR-3", "DR-4"]
+    indice_sites = int(random()*len(sites))
+    cur.execute("INSERT INTO Visited (site, dated) VALUES('"+sites[indice_sites]+"', '1927-02-"+str(randrange(1,31))+"');")
+    
+    taken = [619, 620, 621]
+    indice_taken = int(random()*len(taken))
+    med = ['rad', 'sal', 'temp']
+    indice_med = int(random()*len(med))
+    cur.execute("INSERT INTO Survey VALUES("+str(taken[indice_taken])+", "+str(randrange(1,10))+", '"+str(med[indice_med])+"', '"+str(random())+"')")
+    
     db.commit()
     
 def insere_dados(tabela, col_1, col_2, col_3, col_4 = ''):
@@ -84,14 +104,14 @@ def consultas():
     for row in cur.fetchall():
         print(*row, sep = ', ')
 
-
+insere_aleatorios()
 continuar = "s"
 while(continuar == "s"):
     print("\n\n Menu de consulta Banco de Dados: \n\n")
     print("1- Cadastrar Dados")
     print("2- Consultas \n")
     opcao = input()
-    
+
     if(int(opcao) == 1):
         input_dados()
     else:
